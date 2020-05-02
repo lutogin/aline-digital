@@ -1,0 +1,80 @@
+version: "3"
+
+networks:
+  aline-network:
+    driver: bridge
+
+services:
+  gateway-service:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: "aline.gateway-service"
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+#    env_file:
+#      - ./gateway/.env
+    volumes:
+      - ./gateway:/gateway
+      - /gateway/node_modules
+    depends_on:
+      - users-service
+      - rabbitmq-service
+      - redis-service
+    networks:
+      - aline-network
+
+  users-service:
+    build:
+      context: services/users-service
+      dockerfile: Dockerfile
+    container_name: "aline.users-service"
+    ports:
+      - 3001:3001
+      - 9230:9230
+#    env_file:
+#      - services/users-service/.env
+#    environment:
+#      - RABBITMQ_HOST=rabbitmq-service
+#      - REDIS_HOST=redis-service
+    volumes:
+      - ./services/users-service:/services/users-service
+      - /services/users-service/node_modules
+    depends_on:
+      - rabbitmq-service
+    networks:
+      - aline-network
+
+  rabbitmq-service:
+    build:
+      context: ./services/rabbitmq
+      dockerfile: Dockerfile
+    container_name: "aline.rabbitmq"
+    ports:
+      - 5672:5672
+      - 15672:15672
+#    env_file:
+#      - ./services/rabbitmq/.env
+#    environment:
+#      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+#      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    networks:
+      - aline-network
+
+  redis-service:
+    build:
+      context: ./services/redis
+      dockerfile: Dockerfile
+    container_name: "aline.redis"
+    ports:
+    - 6379:6379
+    volumes:
+      - .docker/redis/redis.conf:/redis.conf
+      - .docker/redis:/data
+    networks:
+      - aline-network

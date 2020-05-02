@@ -1,0 +1,26 @@
+{
+  "name": "gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:raw": "node src/index.js",
+    "start:dev": "yarn backpack",
+    "start:debug": "nodemon --experimental-modules --inspect=0.0.0.0:9230 src/index.js",
+    "start:prod": "yarn build && node ./dist/index.js",
+    "build": "yarn backpack build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "backpack-core": "^0.8.4",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv-safe": "^8.2.0",
+    "express": "^4.17.1",
+    "micromq": "^3.0.2",
+    "nodemon": "^2.0.3",
+    "redis": "^3.0.2"
+  }
+}

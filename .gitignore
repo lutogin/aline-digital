@@ -1,0 +1,7 @@
+.idea
+.vscode
+node_modules
+build
+.docker
+yarn.lock
+package-lock.json
