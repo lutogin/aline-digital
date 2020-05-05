@@ -13,52 +13,44 @@ services:
     ports:
       - "3000:3000"
       - "9229:9229"
-#    env_file:
-#      - ./gateway/.env
     volumes:
       - ./gateway:/gateway
       - /gateway/node_modules
     depends_on:
-      - users-service
+      - data-storage
       - rabbitmq-service
       - redis-service
     networks:
       - aline-network
 
-  users-service:
+  data-storage:
     build:
-      context: services/users-service
+      context: services/data-storage
       dockerfile: Dockerfile
-    container_name: "aline.users-service"
+    container_name: "aline.data-storage-service"
     ports:
       - 3001:3001
       - 9230:9230
-#    env_file:
-#      - services/users-service/.env
-#    environment:
-#      - RABBITMQ_HOST=rabbitmq-service
-#      - REDIS_HOST=redis-service
     volumes:
-      - ./services/users-service:/services/users-service
-      - /services/users-service/node_modules
+      - ./services/data-storage:/services/data-storage
+      - /services/data-storage/node_modules
     depends_on:
       - rabbitmq-service
+      - redis-service
+    environment:
+      WAIT_HOSTS: rabbitmq-service:5672
     networks:
       - aline-network
 
   rabbitmq-service:
-    build:
-      context: ./services/rabbitmq
-      dockerfile: Dockerfile
+    image: rabbitmq:3.8-management-alpine
     container_name: "aline.rabbitmq"
     ports:
       - 5672:5672
       - 15672:15672
-#    env_file:
-#      - ./services/rabbitmq/.env
-#    environment:
-#      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-#      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
       - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
@@ -67,14 +59,13 @@ services:
       - aline-network
 
   redis-service:
-    build:
-      context: ./services/redis
-      dockerfile: Dockerfile
+    image: redis:6.0-alpine
     container_name: "aline.redis"
     ports:
     - 6379:6379
     volumes:
       - .docker/redis/redis.conf:/redis.conf
       - .docker/redis:/data
+    command: redis-server
     networks:
       - aline-network

@@ -1,4 +1,4 @@
-FROM node:12.16.1-alpine
+FROM node:14-alpine
 
 WORKDIR /gateway
 
@@ -8,4 +8,4 @@ RUN yarn install
 
 EXPOSE 3000
 
-CMD ["yarn", "start:dev"]
+CMD yarn start:dev
