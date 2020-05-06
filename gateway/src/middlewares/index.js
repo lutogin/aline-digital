@@ -1,6 +1,7 @@
 import Gateway from 'micromq/gateway';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import compression from 'compression';
 import routes from '../api/routes';
 import errorCatcher from './error-catcher';
 import { RABBITMQ_URL } from '../../config';
@@ -16,6 +17,7 @@ export function applyMiddleware(app) {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use(cors());
+  app.use(compression());
   app.use(gateway.middleware());
 }
 
