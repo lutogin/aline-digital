@@ -19,7 +19,6 @@ class DataStorageDao {
   }
 
   async del(key) {
-    // TODO fix delete
     return this.delAsync(key);
   }
 }

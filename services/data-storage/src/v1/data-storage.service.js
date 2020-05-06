@@ -5,16 +5,24 @@ class DataStorageService {
     this.dao = new DataStorageDao();
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async makeResponse(data) {
+    return {
+      success: !!data,
+      data,
+    };
+  }
+
   async get(key) {
-    return this.dao.get(key);
+    return this.makeResponse(await this.dao.get(key));
   }
 
   async set(key, value) {
-    return this.dao.set(key, value);
+    return this.makeResponse(await this.dao.set(key, value));
   }
 
   async del(key) {
-    return this.dao.del(key);
+    return this.makeResponse(await this.dao.del(key));
   }
 }
 
